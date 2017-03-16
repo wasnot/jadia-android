@@ -39,13 +39,11 @@ class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mData = new ArrayList<>(objects.size() + 2);
         mData.add(null);
         mData.addAll(objects);
-        mData.add(null);
         mIdList = new ArrayList<>(objects.size() + 2);
         mIdList.add("header");
         for (Item item : objects) {
             mIdList.add(item.messageId);
         }
-        mIdList.add("footer");
         mSimpleDateFormat = new SimpleDateFormat("yyyy/M/d HH:mm");
 
     }
@@ -169,6 +167,9 @@ class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     void showFooterProgress() {
         LogUtil.d(TAG, "dissmissFooterProgress ");
+        mData.add(null);
+        mIdList.add("footer");
+        notifyItemInserted(mData.size() - 1);
 //        mUserScroll = false;
 //        if (mProgressFooter.getVisibility() != View.VISIBLE) {
 //            mProgressFooter.setVisibility(View.VISIBLE);
@@ -178,6 +179,10 @@ class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     void dissmissFooterProgress() {
         LogUtil.d(TAG, "dissmissFooterProgress ");
+        //Remove loading item
+        mData.remove(mData.size() - 1);
+        mIdList.remove("footer");
+        notifyItemRemoved(mData.size());
 //        mUserScroll = false;
 //        if (mProgressFooter.getVisibility() == View.VISIBLE) {
 //            mProgressFooter.setVisibility(View.GONE);

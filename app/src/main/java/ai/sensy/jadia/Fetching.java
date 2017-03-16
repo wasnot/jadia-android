@@ -104,13 +104,8 @@ class Fetching {
                 Random r = new Random();
                 count = r.nextInt(9) + 1;
                 Fetching f = new Fetching(con);
-                RandomString rs = new RandomString();
                 for (int i = 0; i < count; i++) {
-                    Item item = new Item();
-                    item.messageId = f.nextSessionId();
-                    item.message = rs.nextString();
-                    item.sendDate = new Date().getTime();
-                    f.putItem(item);
+                    f.putItem(new Item());
                 }
                 f.closeDatabase();
                 return null;
@@ -123,12 +118,6 @@ class Fetching {
         }.execute();
     }
 
-    private SecureRandom random = new SecureRandom();
-
-    String nextSessionId() {
-        return new BigInteger(130, random).toString(32);
-    }
-
     interface OnMessageFetchListener {
 
         void onFetched(boolean result, int count);
@@ -137,41 +126,5 @@ class Fetching {
     interface OnMessageDbListener {
 
         void onUpdate(List<Item> list);
-    }
-}
-
-class RandomString {
-
-    private static final char[] symbols;
-
-    static {
-        StringBuilder tmp = new StringBuilder();
-        for (char ch = '0'; ch <= '9'; ++ch) {
-            tmp.append(ch);
-        }
-        for (char ch = 'a'; ch <= 'z'; ++ch) {
-            tmp.append(ch);
-        }
-        symbols = tmp.toString().toCharArray();
-    }
-
-    private final Random random = new Random();
-
-    private final char[] buf;
-
-    RandomString() {
-        Random r = new Random();
-        int length = r.nextInt(99) + 1;
-        if (length < 1) {
-            throw new IllegalArgumentException("length < 1: " + length);
-        }
-        buf = new char[length];
-    }
-
-    String nextString() {
-        for (int idx = 0; idx < buf.length; ++idx) {
-            buf[idx] = symbols[random.nextInt(symbols.length)];
-        }
-        return new String(buf);
     }
 }
