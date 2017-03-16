@@ -22,7 +22,7 @@ public class ListFragment2 extends Fragment implements MainActivity.OnWindowFocu
 
     // RecyclerViewとAdapter
     private RecyclerView mRecyclerView = null;
-    private RecyclerAdapter mAdapter = null;
+    private RecyclerAdapter2 mAdapter = null;
     private boolean mIsFetching = false;
 
     @Override
@@ -50,10 +50,10 @@ public class ListFragment2 extends Fragment implements MainActivity.OnWindowFocu
         super.onActivityCreated(savedInstanceState);
 //        refresh();
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mRecyclerView.addOnScrollListener(new EndlessScrollListener((LinearLayoutManager) mRecyclerView.getLayoutManager()) {
+        mRecyclerView.addOnScrollListener(new LoadScrollListener((LinearLayoutManager) mRecyclerView.getLayoutManager(), new OnLoadMoreListener() {
             @Override
-            void onLoadMore(int current_page) {
-                LogUtil.d(TAG, "onLoadMore" + current_page);
+            public void onLoadMore() {
+                LogUtil.d(TAG, "onLoadMore");
 //スクロールされた時の処理
                 mAdapter.showFooterProgress();
                 //Load more data for reyclerview
@@ -72,7 +72,30 @@ public class ListFragment2 extends Fragment implements MainActivity.OnWindowFocu
                     }
                 }, 2000);
             }
-        });
+        }));
+//        mRecyclerView.addOnScrollListener(new EndlessScrollListener((LinearLayoutManager) mRecyclerView.getLayoutManager()) {
+//            @Override
+//            void onLoadMore(int current_page) {
+//                LogUtil.d(TAG, "onLoadMore" + current_page);
+////スクロールされた時の処理
+//                mAdapter.showFooterProgress();
+//                //Load more data for reyclerview
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        LogUtil.e("haint", "Load More 2");
+//                        mAdapter.dissmissFooterProgress();
+//                        //Load data
+//                        List<Item> newList = new ArrayList<>();
+////                        int count = new Random().nextInt(9) + 1;
+//                        for (int i = 0; i < 20; i++) {
+//                            newList.add(new Item());
+//                        }
+//                        mAdapter.addAll(newList);
+//                    }
+//                }, 2000);
+//            }
+//        });
     }
 
     @Override
@@ -109,7 +132,7 @@ public class ListFragment2 extends Fragment implements MainActivity.OnWindowFocu
         if (newList.size() == 0) {
             LogUtil.d(TAG, "fetching from refresh :" + newList.size());
         }
-        mAdapter = new RecyclerAdapter(getActivity(), newList);
+        mAdapter = new RecyclerAdapter2(getActivity(), newList);
         mRecyclerView.setAdapter(mAdapter);
         checkEmpty(newList.size());
     }
