@@ -24,6 +24,7 @@ public class ListFragment2 extends Fragment implements MainActivity.OnWindowFocu
     private RecyclerView mRecyclerView = null;
     private RecyclerAdapter2 mAdapter = null;
     private boolean mIsFetching = false;
+    private LoadScrollListener mScrollListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -50,10 +51,10 @@ public class ListFragment2 extends Fragment implements MainActivity.OnWindowFocu
         super.onActivityCreated(savedInstanceState);
 //        refresh();
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mRecyclerView.addOnScrollListener(new LoadScrollListener((LinearLayoutManager) mRecyclerView.getLayoutManager(), new OnLoadMoreListener() {
+        mScrollListener = new LoadScrollListener((LinearLayoutManager) mRecyclerView.getLayoutManager(), new OnLoadMoreListener() {
             @Override
-            public void onLoadMore() {
-                LogUtil.d(TAG, "onLoadMore");
+            public void onLoadMore(final int currentPage) {
+                LogUtil.d(TAG, "onLoadMore " +currentPage );
 //スクロールされた時の処理
                 mAdapter.showFooterProgress();
                 //Load more data for reyclerview
@@ -62,17 +63,21 @@ public class ListFragment2 extends Fragment implements MainActivity.OnWindowFocu
                     public void run() {
                         LogUtil.e("haint", "Load More 2");
                         mAdapter.dissmissFooterProgress();
-                        //Load data
-                        List<Item> newList = new ArrayList<>();
-//                        int count = new Random().nextInt(9) + 1;
-                        for (int i = 0; i < 20; i++) {
-                            newList.add(new Item());
-                        }
-                        mAdapter.addAll(newList);
+//                        if (currentPage < 3) {
+//                            //Load data
+//                            List<Item> newList = new ArrayList<>();
+////                        int count = new Random().nextInt(9) + 1;
+//                            for (int i = 0; i < 5; i++) {
+//                                newList.add(new Item());
+//                            }
+//                            mAdapter.addAll(newList);
+//                        }
+                        mScrollListener.setLoaded();
                     }
                 }, 2000);
             }
-        }));
+        });
+        mRecyclerView.addOnScrollListener(mScrollListener);
 //        mRecyclerView.addOnScrollListener(new EndlessScrollListener((LinearLayoutManager) mRecyclerView.getLayoutManager()) {
 //            @Override
 //            void onLoadMore(int current_page) {
@@ -126,7 +131,7 @@ public class ListFragment2 extends Fragment implements MainActivity.OnWindowFocu
 
         List<Item> newList = new ArrayList<>();
 //                        int count = new Random().nextInt(9) + 1;
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 2; i++) {
             newList.add(new Item());
         }
         if (newList.size() == 0) {

@@ -14,6 +14,7 @@ public class LoadScrollListener extends RecyclerView.OnScrollListener {
     private int visibleThreshold = 5;
     private int lastVisibleItem, totalItemCount;
     private OnLoadMoreListener mOnLoadMoreListener;
+    private int currentPage = 1;
 
     LoadScrollListener(LinearLayoutManager linearLayoutManager, OnLoadMoreListener loadMoreListener){
         this.linearLayoutManager = linearLayoutManager;
@@ -26,8 +27,9 @@ public class LoadScrollListener extends RecyclerView.OnScrollListener {
         totalItemCount = linearLayoutManager.getItemCount();
         lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
         if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+            currentPage++;
             if (mOnLoadMoreListener != null) {
-                mOnLoadMoreListener.onLoadMore();
+                mOnLoadMoreListener.onLoadMore(currentPage);
             }
             isLoading = true;
         }

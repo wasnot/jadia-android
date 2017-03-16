@@ -6,5 +6,5 @@ package ai.sensy.jadia;
 
 public interface OnLoadMoreListener {
 
-    void onLoadMore();
+    void onLoadMore(int currentPage);
 }
