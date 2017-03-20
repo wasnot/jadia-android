@@ -8,13 +8,14 @@ import android.support.v7.widget.RecyclerView;
  */
 
 public class LoadScrollListener extends RecyclerView.OnScrollListener {
+    private String TAG = LoadScrollListener.class.getSimpleName();
 
     private LinearLayoutManager linearLayoutManager;
     private boolean isLoading;
-    private int visibleThreshold = 5;
+    private int visibleThreshold = 1;
     private int lastVisibleItem, totalItemCount;
     private OnLoadMoreListener mOnLoadMoreListener;
-    private int currentPage = 1;
+    private int currentPage = 0;
 
     LoadScrollListener(LinearLayoutManager linearLayoutManager, OnLoadMoreListener loadMoreListener){
         this.linearLayoutManager = linearLayoutManager;
@@ -26,6 +27,7 @@ public class LoadScrollListener extends RecyclerView.OnScrollListener {
         super.onScrolled(recyclerView, dx, dy);
         totalItemCount = linearLayoutManager.getItemCount();
         lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+//        LogUtil.d(TAG, "onScrolled " + totalItemCount + ", "+lastVisibleItem);
         if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
             currentPage++;
             if (mOnLoadMoreListener != null) {

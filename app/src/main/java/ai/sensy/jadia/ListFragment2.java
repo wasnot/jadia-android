@@ -1,7 +1,7 @@
 package ai.sensy.jadia;
 
+import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * list
@@ -23,7 +24,6 @@ public class ListFragment2 extends Fragment implements MainActivity.OnWindowFocu
     // RecyclerViewとAdapter
     private RecyclerView mRecyclerView = null;
     private RecyclerAdapter2 mAdapter = null;
-    private boolean mIsFetching = false;
     private LoadScrollListener mScrollListener;
 
     @Override
@@ -38,7 +38,6 @@ public class ListFragment2 extends Fragment implements MainActivity.OnWindowFocu
             public void onClick(View v) {
                 if (mRecyclerView != null && mRecyclerView.getVisibility() == View.GONE) {
                     mRecyclerView.setVisibility(View.VISIBLE);
-                    mAdapter.showFooterProgress();
                 }
             }
         });
@@ -49,58 +48,16 @@ public class ListFragment2 extends Fragment implements MainActivity.OnWindowFocu
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-//        refresh();
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mScrollListener = new LoadScrollListener((LinearLayoutManager) mRecyclerView.getLayoutManager(), new OnLoadMoreListener() {
             @Override
             public void onLoadMore(final int currentPage) {
-                LogUtil.d(TAG, "onLoadMore " +currentPage );
+                LogUtil.d(TAG, "onLoadMore " + currentPage);
 //スクロールされた時の処理
-                mAdapter.showFooterProgress();
-                //Load more data for reyclerview
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        LogUtil.e("haint", "Load More 2");
-                        mAdapter.dissmissFooterProgress();
-//                        if (currentPage < 3) {
-//                            //Load data
-//                            List<Item> newList = new ArrayList<>();
-////                        int count = new Random().nextInt(9) + 1;
-//                            for (int i = 0; i < 5; i++) {
-//                                newList.add(new Item());
-//                            }
-//                            mAdapter.addAll(newList);
-//                        }
-                        mScrollListener.setLoaded();
-                    }
-                }, 2000);
+                loadNext(currentPage);
             }
         });
         mRecyclerView.addOnScrollListener(mScrollListener);
-//        mRecyclerView.addOnScrollListener(new EndlessScrollListener((LinearLayoutManager) mRecyclerView.getLayoutManager()) {
-//            @Override
-//            void onLoadMore(int current_page) {
-//                LogUtil.d(TAG, "onLoadMore" + current_page);
-////スクロールされた時の処理
-//                mAdapter.showFooterProgress();
-//                //Load more data for reyclerview
-//                new Handler().postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        LogUtil.e("haint", "Load More 2");
-//                        mAdapter.dissmissFooterProgress();
-//                        //Load data
-//                        List<Item> newList = new ArrayList<>();
-////                        int count = new Random().nextInt(9) + 1;
-//                        for (int i = 0; i < 20; i++) {
-//                            newList.add(new Item());
-//                        }
-//                        mAdapter.addAll(newList);
-//                    }
-//                }, 2000);
-//            }
-//        });
     }
 
     @Override
@@ -124,7 +81,7 @@ public class ListFragment2 extends Fragment implements MainActivity.OnWindowFocu
     }
 
     private void refresh() {
-        LogUtil.d(TAG, "refresh " + mIsFetching);
+        LogUtil.d(TAG, "refresh ");
         if (getActivity() == null || !isAdded()) {
             return;
         }
@@ -143,17 +100,53 @@ public class ListFragment2 extends Fragment implements MainActivity.OnWindowFocu
     }
 
     private void checkEmpty(int newCount) {
-        LogUtil.d(TAG, "checkEmpty " + mIsFetching + ", " + newCount);
+        LogUtil.d(TAG, "checkEmpty " + ", " + newCount);
         if (getActivity() == null || !isAdded()) {
             return;
         }
         if (mRecyclerView == null || mAdapter == null) {
             return;
         }
-        if (newCount == 0 && (mAdapter.getItemCount() - 2) == 0) {
+        if (newCount == 0 && mAdapter.getContentCount() == 0) {
             mRecyclerView.setVisibility(View.GONE);
         } else {
             mRecyclerView.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void loadNext(final int currentPage) {
+        LogUtil.d(TAG, "loadNext");
+//        mAdapter.showFooterProgress();
+        //Load more data for reyclerview
+        mRecyclerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                LogUtil.e(TAG, "Load More " + currentPage);
+                mAdapter.dismissFooterProgress();
+                //Load data
+                List<Item> newList = new ArrayList<>();
+                if (currentPage < 2 || false) {
+                    Random r = new Random();
+//                    if (r.nextInt(3) == 0 || false) {
+                    int color = Color.rgb(r.nextInt(255), r.nextInt(255), r.nextInt(255));
+//                        int count = new Random().nextInt(9) + 1;
+                    for (int i = 0; i < 3; i++) {
+                        newList.add(new Item(color));
+                    }
+//                    }
+                    mAdapter.addAll(newList);
+                }
+                if (newList.size() == 0) {
+                    checkEmpty(0);
+                }
+                mRecyclerView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter.showFooterProgress();
+                        mScrollListener.setLoaded();
+                    }
+                }, 2000);
+            }
+        }, 2000);
     }
 }

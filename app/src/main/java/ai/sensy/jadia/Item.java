@@ -1,5 +1,7 @@
 package ai.sensy.jadia;
 
+import android.graphics.Color;
+
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Date;
@@ -11,6 +13,7 @@ import java.util.Random;
 
 public class Item {
 
+    int color;
     public String message;
     public String messageId;
     public long sendDate;
@@ -23,8 +26,15 @@ public class Item {
         return message;
     }
 
-    public Item() {
 
+    public Item() {
+        this.color = Color.parseColor("#FF4081");
+        this.messageId = RandomString.nextSessionId();
+        this.message = RandomString.nextId();
+        this.sendDate = new Date().getTime();
+    }
+    public Item(int color) {
+        this.color =color;
         this.messageId = RandomString.nextSessionId();
         this.message = RandomString.nextId();
         this.sendDate = new Date().getTime();
@@ -72,5 +82,9 @@ public class Item {
         }
     }
 }
+class HeaderItem extends Item{
 
-
+}
+class FooterItem extends Item{
+    int space = 0;
+}
